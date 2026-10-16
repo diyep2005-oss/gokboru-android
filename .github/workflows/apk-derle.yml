@@ -12,27 +12,29 @@ jobs:
       - name: Kodu indir
         uses: actions/checkout@v4
 
-      - name: ZIP dosyasini ac
+      - name: Zip dosyasini ac
         run: unzip -q gokboru-android.zip
 
       - name: Java kur
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: 17
 
-      - name: Android SDK kur
-        uses: android-actions/setup-android@v3
+      - name: Android lisanslarini kabul et
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses || true
 
       - name: Gradle kur
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: 8.9
 
       - name: APK derle
         working-directory: gokboru-android
-        run: gradle assembleDebug
+        run: gradle assembleDebug --no-daemon --stacktrace
 
       - name: APK dosyasini yukle
         uses: actions/upload-artifact@v4
         with:
           name: gokboru-browser-apk
-          path: gokboru-android/**/build/outputs/apk/debug/*.apk
+          path: gokboru-android/app/build/outputs/apk/debug/*.apk
